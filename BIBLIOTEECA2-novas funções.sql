@@ -125,7 +125,7 @@ JOIN Livro li ON li.id_livro = e.id_livro
 -- Mostra o texto conforme o tamanho passado, atributo, tamanho inicial, tamanho final
 SELECT SUBSTRING(titulo, 1, 10) FROM Livro;
 
--- RTRIM(direita) / LTRIN(esquerda) / TRIM(dos dois lados
+-- RTRIM(direita) / LTRIM(esquerda) / TRIM(dos dois lados
 SELECT Nome, RTRIM(Nome), LTRIM(nome), TRIM(nome) FROM Leitor;
 
 -- FUNÇÕES DE DATA E HORA
