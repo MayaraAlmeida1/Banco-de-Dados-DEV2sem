@@ -1,5 +1,7 @@
 -- TRIGGERS
 
+USE VendasOnline;
+
 -- Trigger 1: Auditoria clientes inseridos
 CREATE TABLE AuditoriaCliente(
 	Auditoria INT IDENTITY PRIMARY KEY,
@@ -90,7 +92,7 @@ CREATE TABLE logFuncionario(
 	DataCadastro DATETIME2(0) DEFAULT DATEADD(HOUR, -3, SYSUTCDATETIME())
 )
 
-CREATE TRIGGER trg_LofFuncionario
+CREATE TRIGGER trg_LogFuncionario
 ON Funcionario
 AFTER INSERT
 
@@ -108,3 +110,48 @@ VALUES
 
 SELECT * FROM Funcionario;
 SELECT * FROM LogFuncionario;
+
+-- Trigger 5: Histórico automático de alteração de preço
+CREATE TRIGGER trg_HistoricoPrecos
+ON Produto
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF UPDATE(Preco)
+    BEGIN
+        INSERT INTO Historico_Precos (ProdutoID, PrecoAntigo, PrecoNovo, DataModificacao)
+        SELECT i.ProdutoID, d.Preco, i.Preco, DATEADD(HOUR, -3, SYSUTCDATETIME())
+          FROM inserted i
+          JOIN deleted d ON i.ProdutoID = d.ProdutoID;
+    END
+END;
+
+
+-- TESTANDO TRIGGER
+UPDATE Produto SET Preco = 4800.00 WHERE ProdutoID = 1;
+SELECT * FROM Historico_Precos;
+
+-- Trigger 6: Impedir CPF duplicado
+CREATE TRIGGER trg_ValidaCPF
+ON Funcionario
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (
+        SELECT 1
+          FROM inserted i
+          JOIN Funcionario f ON f.CPF = i.CPF AND f.ID <> i.ID
+    )
+    BEGIN
+        RAISERROR('CPF já cadastrado!', 16, 1);
+        ROLLBACK TRANSACTION; -- anula o comando (cancelando o insert ou update).
+    END;
+END;
+
+
+-- TESTANDO TRIGGER
+INSERT INTO Funcionario (Nome, CPF) VALUES ('Joana Prado', '123.456.789-00');
+INSERT INTO Funcionario (Nome, CPF) VALUES ('Pedro Ramos', '123.456.789-00'); -- Deve falhar
+SELECT * FROM LogFuncionarios;
