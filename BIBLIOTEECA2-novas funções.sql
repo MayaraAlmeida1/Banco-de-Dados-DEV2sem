@@ -156,9 +156,7 @@ SELECT id_emprestimo, data_emprestimo, data_devolucao,
 DATEDIFF(DAY, data_emprestimo, ISNULL(data_devolucao, GETDATE()))
 AS DiasComLivro
 FROM Emprestimo;
--- se data_devolucao estiver vazio, ele acrescenta o
--- GETDATE para inserir a data atual e comparar com a 
--- data empréstimo.
+-- se data_devolucao estiver vazio, ele acrescenta o GETDATE para inserir a data atual e comparar com a data empréstimo.
 
 -- FORMAT: FORMATAR DATAS
 SELECT * FROM Emprestimo;

@@ -1,5 +1,5 @@
 
-USE VendasOnline;
+USE VendasOnline;	
 
 -- PROCEDURES -- Procedimento armazenado, sequência de códigos armazanada para apeas chamar e usar
 
